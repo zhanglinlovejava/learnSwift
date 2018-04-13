@@ -7,14 +7,19 @@
 //
 
 import UIKit
+import Alamofire
 class VideoPlayController:BaseViewController,UITableViewDelegate,UITableViewDataSource{
     var tableView:UITableView!
     var videoView:UIImageView!
-    var imageUrl:String = ""
+    var videoId:Int = -1
+    var imageUrl = ""
+    var itemData = VideoItem()
     override func viewDidLoad() {
         super.viewDidLoad()
         setUp()
+        addGobackButton()
     }
+    
     private func setUp(){
         videoView = UIImageView()
         self.view.addSubview(videoView)
@@ -32,16 +37,6 @@ class VideoPlayController:BaseViewController,UITableViewDelegate,UITableViewData
             make.left.right.bottom.equalToSuperview()
             make.top.equalTo(videoView.snp.bottom)
         }
-        let backBtn = UIButton()
-        backBtn.setBackgroundImage(UIImage(named: "back"), for: .normal)
-        self.view.addSubview(backBtn)
-        backBtn.addTarget(self, action: #selector(goback), for: .touchUpInside)
-        backBtn.snp.makeConstraints { (make) in
-            make.left.top.equalToSuperview().offset(15)
-        }
-    }
-    @objc func goback(){
-        self.dismiss(animated: true, completion: nil)
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 4

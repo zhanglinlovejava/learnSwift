@@ -13,7 +13,7 @@ import SDWebImage
 class HomeViewController: BaseViewController,UITableViewDelegate,UITableViewDataSource
 {
     var tableView:UITableView!
-    var newsList = [Story]()
+    var videoList = [VideoItem]()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "每日精选"
@@ -27,40 +27,60 @@ class HomeViewController: BaseViewController,UITableViewDelegate,UITableViewData
         tableView.dataSource = self
         tableView.register(HomeTableViewCell.classForCoder(), forCellReuseIdentifier: "home")
     }
-    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 300
+    }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return newsList.count
+        return videoList.count
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let nvc = NewsDetailViewController()
-        nvc.newsId = newsList[indexPath.row].id
-        self.navigationController?.pushViewController(nvc, animated: true)
+        let videoVC = VideoPlayController()
+        videoVC.imageUrl = (videoList[indexPath.row].data?.cover?.feed)!
+        videoVC.videoId = videoList[indexPath.row].id!
+        videoVC.itemData = videoList[indexPath.row]
+        self.present(videoVC, animated: true, completion: nil)
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "home", for: indexPath) as! HomeTableViewCell
-        let url = URL(string:newsList[indexPath.row].images![0])
+        let data = videoList[indexPath.row].data
+        let url = URL(string:(data?.cover?.feed)!)
         cell.bgImage.sd_setImage(with: url, placeholderImage: nil)
-        cell.label.text = newsList[indexPath.row].title
+        cell.titleLable.text = data?.title
+        cell.avatar.sd_setImage(with: URL(string: (data?.author?.icon)!), placeholderImage: UIImage(named: "default_icon"), completed: nil)
+        var tagText = "#"
+        data?.tags?.forEach({ (tag) in
+            tagText += tag.name! + "/"
+        })
+        tagText += formatSecondDuration(duration: (data?.duration)!)
+        cell.tagLabel.text = tagText
+        cell.categoryLabel.text = "#" + (data?.category)!
         return cell
-    }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
     }
     fileprivate func loadData(){
         showLoading()
-        let url = "http://news-at.zhihu.com/api/4/news/latest"
-        request(url).response{response in
+        let url = "http://baobab.kaiyanapp.com/api/v2/feed?"
+        request(url).responseJSON { (response) in
             self.hideLoading()
             if response.error == nil{
-                let news = try? self.decoder.decode(News.self, from: response.data!)
-                self.newsList = (news?.stories)!
-                self.tableView.reloadData()
+                do{
+                    let home = try self.decoder.decode(Home.self, from: response.data!)
+                    let temList = home.issueList![0].itemList!
+                    for (_,item) in temList.enumerated(){
+                        if item.type == "video"{
+                            self.videoList.append(item)
+                        }
+                    }
+                    self.tableView.reloadData()
+                }catch{
+                    print(error)
+                }
             }else{
-                print("请求失败")
+                print(response.error!)
             }
         }
+        
     }
 }

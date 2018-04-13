@@ -8,6 +8,7 @@
 
 import UIKit
 import NVActivityIndicatorView
+import SnapKit
 class BaseViewController: ViewController {
     var loadingView:NVActivityIndicatorView!
     lazy var decoder : JSONDecoder = {
@@ -28,7 +29,23 @@ class BaseViewController: ViewController {
     @objc func onRightClick(){
         
     }
+    func addGobackButton(){
+        let backBtn = UIButton()
+        backBtn.backgroundColor = UIColor.red
+        backBtn.setBackgroundImage(UIImage(named: "back"), for: .normal)
+        self.view.addSubview(backBtn)
+        backBtn.addTarget(self, action: #selector(goback), for: .touchUpInside)
+        backBtn.snp.makeConstraints { (make) in
+            make.left.top.equalToSuperview().offset(15)
+            make.height.width.equalTo(50)
+        }
+        
+    }
     
+    @objc func goback(){
+        self.dismiss(animated: true, completion: nil)
+    }
+
     func showLoading(){
         if loadingView == nil {
             loadingView = NVActivityIndicatorView(frame: CGRect(), type: NVActivityIndicatorType.ballBeat, color: UIColor.red, padding: 0)

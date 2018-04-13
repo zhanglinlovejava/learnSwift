@@ -25,28 +25,26 @@ class Issue: Codable{
 class VideoItem: Codable {
     var type:String?
     var data:VideoData?
-    var id:Int = 0
-    var adIndex:Int = 0
+    var id:Int?
+    var adIndex:Int?
 }
 
 class VideoData: Codable {
     var dataType:String?
-    var id:Int = 0
+    var id:Int?
     var title:String?
     var description:String?
-    var library:String?
     var tags:[Tag]?
-//    var provider:[Provider]?
-    var catrgory:String?
-//    var author:[Author]?
+    var provider:Provider?
+    var category:String?
+    var author:Author?
     var cover:Cover?
-    var duration:Int = 0
+    var duration:Int?
     var webUrl:WebUrl?
     var releaseTime:Double?
     var playInfo:[PlayInfo]?
     var type:String?
     var remark:String?
-    var idx:Int = 0
     var date:Double?
 }
 class PlayInfo: Codable {

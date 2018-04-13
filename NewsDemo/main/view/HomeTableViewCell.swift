@@ -10,13 +10,21 @@ import UIKit
 import SnapKit
 class HomeTableViewCell: UITableViewCell {
     let bgImage = UIImageView()
-    let label = UILabel()
+    let tagLabel = UILabel()
+    let avatar = UIImageView()
+    let titleLable = UILabel()
+    let categoryLabel = UILabel()
+    let infoView = UIView()
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setUI()
         self.contentView.addSubview(bgImage)
-        self.contentView.addSubview(label)
+        infoView.addSubview(avatar)
+        infoView.addSubview(tagLabel)
+        infoView.addSubview(titleLable)
+        infoView.addSubview(categoryLabel)
+        self.contentView.addSubview(infoView)
         makeConstraints()
     }
     
@@ -24,19 +32,40 @@ class HomeTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     func setUI(){
-        label.numberOfLines = 2
+        tagLabel.textColor = UIColor.gray
+        titleLable.textColor = UIColor.black
+        categoryLabel.textColor = UIColor.gray
+        categoryLabel.sizeToFit()
     }
     func makeConstraints(){
         bgImage.snp.makeConstraints { (make) in
-            make.right.bottom.equalToSuperview().offset(-10)
-            make.top.equalTo(self.contentView).offset(10)
-            make.width.equalTo(80)
+            make.left.right.top.equalToSuperview()
+            make.height.equalTo(220)
         }
-        label.snp.makeConstraints { (make) in
-            make.top.bottom.equalTo(bgImage)
-            make.left.equalToSuperview().offset(10)
-            make.height.equalTo(bgImage)
-            make.right.equalTo(bgImage.snp.left).offset(-10)
+        infoView.snp.makeConstraints { (make) in
+            make.left.right.equalTo(bgImage)
+            make.top.equalTo(bgImage.snp.bottom)
+            make.bottom.equalToSuperview()
         }
+        
+        avatar.snp.makeConstraints { (make) in
+            make.left.top.equalTo(infoView).offset(10)
+            make.bottom.equalToSuperview().offset(-10)
+            make.width.equalTo(avatar.snp.height)
+        }
+        categoryLabel.snp.makeConstraints { (make) in
+            make.right.equalTo(infoView).offset(-20)
+            make.centerY.equalTo(infoView)
+        }
+        titleLable.snp.makeConstraints { (make) in
+            make.left.equalTo(avatar.snp.right).offset(20)
+            make.right.equalTo(categoryLabel.snp.left).offset(-20)
+            make.top.equalTo(infoView).offset(15)
+        }
+        tagLabel.snp.makeConstraints { (make) in
+            make.left.equalTo(titleLable)
+            make.bottom.equalTo(infoView).offset(-15)
+        }
+       
     }
 }

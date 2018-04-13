@@ -28,7 +28,6 @@ class CategoryListController:BaseViewController,UITableViewDelegate,UITableViewD
         self.view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.allowsSelection = false
         tableView.register(CategoryDetailCell.classForCoder(), forCellReuseIdentifier: "detail")
     }
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -41,11 +40,11 @@ class CategoryListController:BaseViewController,UITableViewDelegate,UITableViewD
         let cell = tableView.dequeueReusableCell(withIdentifier: "detail", for: indexPath) as! CategoryDetailCell
         let item = categoryDetailList[indexPath.row].data
         cell.bgImage.sd_setImage(with: URL(string:(item?.cover?.feed)!), completed: nil)
-        cell.tagLabel.text = "# \(String(describing: item?.catrgory))/\(formatSecondDuration(duration: (item?.duration)!))"
+        cell.tagLabel.text = "#\((item?.category)!)/\(formatSecondDuration(duration: (item?.duration)!))"
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        print("点解了")
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoryDetailList.count
