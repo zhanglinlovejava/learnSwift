@@ -1,0 +1,9 @@
+{
+  "commitish" : "4.3.3",
+  "iOS" : [
+    {
+      "name" : "SDWebImage",
+      "hash" : "bc2403d226c96203f528d94aa7fc024197cf05085beeb4ca6132b0319b1b3947"
+    }
+  ]
+}

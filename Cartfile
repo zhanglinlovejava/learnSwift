@@ -1,0 +1,5 @@
+github "Alamofire/Alamofire" ~> 4.7
+github "SnapKit/SnapKit" ~> 4.0.0
+github "ninjaprox/NVActivityIndicatorView"
+github "rs/SDWebImage"
+github "yannickl/DynamicColor" >= 4.0.1
