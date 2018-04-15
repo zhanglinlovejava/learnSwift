@@ -81,8 +81,7 @@ class FollowTableViewCell: UITableViewCell,UICollectionViewDataSource,UICollecti
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let videoVC = VideoPlayController()
-        videoVC.imageUrl = (itemList[indexPath.row].data?.cover?.feed)!
-        videoVC.videoId = itemList[indexPath.row].id!
+        videoVC.videoId = (itemList[indexPath.row].data?.id)!
         videoVC.itemData = itemList[indexPath.row]
         fatherController?.present(videoVC, animated: true, completion: nil)
     }

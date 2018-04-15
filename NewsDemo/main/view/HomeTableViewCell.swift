@@ -36,6 +36,7 @@ class HomeTableViewCell: UITableViewCell {
         titleLable.textColor = UIColor.black
         categoryLabel.textColor = UIColor.gray
         categoryLabel.sizeToFit()
+        tagLabel.font = UIFont.boldSystemFont(ofSize: 15)
     }
     func makeConstraints(){
         bgImage.snp.makeConstraints { (make) in
@@ -50,22 +51,24 @@ class HomeTableViewCell: UITableViewCell {
         
         avatar.snp.makeConstraints { (make) in
             make.left.top.equalTo(infoView).offset(10)
-            make.bottom.equalToSuperview().offset(-10)
+            make.bottom.equalTo(infoView).offset(-10)
             make.width.equalTo(avatar.snp.height)
         }
-        categoryLabel.snp.makeConstraints { (make) in
-            make.right.equalTo(infoView).offset(-20)
-            make.centerY.equalTo(infoView)
-        }
+       
         titleLable.snp.makeConstraints { (make) in
             make.left.equalTo(avatar.snp.right).offset(20)
-            make.right.equalTo(categoryLabel.snp.left).offset(-20)
-            make.top.equalTo(infoView).offset(15)
+            make.top.equalTo(infoView).offset(10)
         }
         tagLabel.snp.makeConstraints { (make) in
             make.left.equalTo(titleLable)
-            make.bottom.equalTo(infoView).offset(-15)
+            make.width.equalTo(titleLable)
+            make.bottom.equalTo(infoView).offset(-10)
         }
-       
+        categoryLabel.snp.makeConstraints { (make) in
+            make.right.equalTo(infoView).offset(-10)
+            make.left.greaterThanOrEqualTo(titleLable.snp.right).offset(20)
+            make.centerY.equalTo(infoView)
+            make.width.equalTo(60)
+        }
     }
 }

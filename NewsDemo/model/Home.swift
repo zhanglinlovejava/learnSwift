@@ -25,14 +25,16 @@ class Issue: Codable{
 class VideoItem: Codable {
     var type:String?
     var data:VideoData?
-    var id:Int?
-    var adIndex:Int?
+    var id:Int = 0
+    var adIndex:Int = 0
 }
 
 class VideoData: Codable {
     var dataType:String?
     var id:Int?
     var title:String?
+    var text:String?
+    var actionUrl:String?
     var description:String?
     var tags:[Tag]?
     var provider:Provider?
@@ -43,9 +45,15 @@ class VideoData: Codable {
     var webUrl:WebUrl?
     var releaseTime:Double?
     var playInfo:[PlayInfo]?
+    var consumption:Consumption?
     var type:String?
     var remark:String?
     var date:Double?
+}
+class Consumption:Codable{
+    var collectionCount:Int = 0
+    var shareCount:Int = 0
+    var replyCount:Int = 0
 }
 class PlayInfo: Codable {
     var height:Int = 0

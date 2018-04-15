@@ -10,25 +10,40 @@ import SnapKit
 import UIKit
 import Alamofire
 import SDWebImage
+import ESPullToRefresh
 class HomeViewController: BaseViewController,UITableViewDelegate,UITableViewDataSource
 {
     var tableView:UITableView!
     var videoList = [VideoItem]()
+    var nextPageUrl = ""
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "每日精选"
         setUp()
-        loadData()
+        loadData(.NORMAL)
     }
-    fileprivate func setUp(){
-        tableView = UITableView(frame: self.view.bounds)
+    private func setUp(){
+        tableView = UITableView()
         self.view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(HomeTableViewCell.classForCoder(), forCellReuseIdentifier: "home")
+        tableView.snp.makeConstraints { (make) in
+            make.left.right.equalToSuperview()
+            make.top.equalToSuperview().offset(60)
+            make.bottom.equalToSuperview().offset(-40)
+        }
+        tableView.es.addPullToRefresh {
+            [unowned self] in
+            self.loadData(.REFRESH)
+        }
+        tableView.es.addInfiniteScrolling {
+            [unowned self] in
+            self.loadData(.LOADMORE)
+        }
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 300
+        return 285
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -38,8 +53,7 @@ class HomeViewController: BaseViewController,UITableViewDelegate,UITableViewData
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let videoVC = VideoPlayController()
-        videoVC.imageUrl = (videoList[indexPath.row].data?.cover?.feed)!
-        videoVC.videoId = videoList[indexPath.row].id!
+        videoVC.videoId = (videoList[indexPath.row].data?.id)!
         videoVC.itemData = videoList[indexPath.row]
         self.present(videoVC, animated: true, completion: nil)
     }
@@ -59,20 +73,38 @@ class HomeViewController: BaseViewController,UITableViewDelegate,UITableViewData
         cell.categoryLabel.text = "#" + (data?.category)!
         return cell
     }
-    fileprivate func loadData(){
-        showLoading()
-        let url = "http://baobab.kaiyanapp.com/api/v2/feed?"
+    fileprivate func loadData(_ state:LoadDataState){
+        print(state)
+        var url = ""
+        switch state {
+        case .NORMAL:
+            do {
+                showLoading()
+                url = "http://baobab.kaiyanapp.com/api/v2/feed?"
+            }
+        case .LOADMORE:
+            url = nextPageUrl
+        case .REFRESH:
+            url = "http://baobab.kaiyanapp.com/api/v2/feed?"
+        }
         request(url).responseJSON { (response) in
             self.hideLoading()
+            self.tableView.es.stopLoadingMore()
+            self.tableView.es.stopPullToRefresh()
             if response.error == nil{
                 do{
                     let home = try self.decoder.decode(Home.self, from: response.data!)
                     let temList = home.issueList![0].itemList!
+                    self.nextPageUrl = home.nextPageUrl!
+                    if state == .REFRESH{
+                        self.videoList.removeAll()
+                    }
                     for (_,item) in temList.enumerated(){
                         if item.type == "video"{
                             self.videoList.append(item)
                         }
                     }
+                    print(self.videoList.count)
                     self.tableView.reloadData()
                 }catch{
                     print(error)

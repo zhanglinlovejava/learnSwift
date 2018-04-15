@@ -1,9 +1,0 @@
-{
-  "commitish" : "4.0.2",
-  "iOS" : [
-    {
-      "name" : "DynamicColor",
-      "hash" : "257adddcba707fb107b86fde97af803ddecc914a45efd08c198b9da4eb66556e"
-    }
-  ]
-}

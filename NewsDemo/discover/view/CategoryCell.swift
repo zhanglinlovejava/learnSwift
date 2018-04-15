@@ -27,7 +27,7 @@ class CategoryCell: UICollectionViewCell {
         tagLabel.backgroundColor = bgColor
         tagLabel.textColor = UIColor.white
         tagLabel.textAlignment = NSTextAlignment.center
-        tagLabel.font = UIFont.boldSystemFont(ofSize: 25)
+        tagLabel.font = UIFont.boldSystemFont(ofSize: 20)
         setCorner(10, bgImage)
         setCorner(10, tagLabel)
     }

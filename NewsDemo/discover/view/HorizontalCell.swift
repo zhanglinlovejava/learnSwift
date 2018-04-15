@@ -25,7 +25,6 @@ class HorizontalCell:UICollectionViewCell{
         fatalError("init(coder:) has not been implemented")
     }
     fileprivate func setUI(){
-        horImage.backgroundColor = UIColor.red
         horTitle.textColor = UIColor.black
         horTag.textColor = UIColor.black
     }

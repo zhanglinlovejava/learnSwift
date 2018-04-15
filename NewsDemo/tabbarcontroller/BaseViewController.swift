@@ -31,13 +31,11 @@ class BaseViewController: ViewController {
     }
     func addGobackButton(){
         let backBtn = UIButton()
-        backBtn.backgroundColor = UIColor.red
         backBtn.setBackgroundImage(UIImage(named: "back"), for: .normal)
         self.view.addSubview(backBtn)
         backBtn.addTarget(self, action: #selector(goback), for: .touchUpInside)
         backBtn.snp.makeConstraints { (make) in
-            make.left.top.equalToSuperview().offset(15)
-            make.height.width.equalTo(50)
+            make.left.top.equalToSuperview().offset(20)
         }
         
     }
@@ -48,7 +46,7 @@ class BaseViewController: ViewController {
 
     func showLoading(){
         if loadingView == nil {
-            loadingView = NVActivityIndicatorView(frame: CGRect(), type: NVActivityIndicatorType.ballBeat, color: UIColor.red, padding: 0)
+            loadingView = NVActivityIndicatorView(frame: CGRect.zero, type: NVActivityIndicatorType.ballClipRotatePulse, color: UIColor.magenta, padding: 0)
             self.view.addSubview(loadingView)
             loadingView.snp.makeConstraints { (make) in
                 make.width.height.equalTo(60)

@@ -43,9 +43,9 @@ class DiscoverViewController: BaseViewController,UITableViewDelegate,UITableView
         segmentedControll.selectedSegmentIndex = 0
         segmentedControll.addTarget(self, action: #selector(onSegmentValueChanged(_:)), for: .valueChanged)
         segmentedControll.tintColor = UIColor.black
-        segmentedControll.setTitleTextAttributes([kCTFontAttributeName:UIFont.boldSystemFont(ofSize: 20)], for: .normal)
+        segmentedControll.setTitleTextAttributes([kCTFontAttributeName:UIFont.boldSystemFont(ofSize: 15)], for: .normal)
         segmentedControll.snp.makeConstraints { (make) in
-            make.height.equalTo(40)
+            make.height.equalTo(30)
             make.width.equalToSuperview().offset(-20)
             make.top.equalToSuperview().offset(65)
             make.centerX.equalToSuperview()

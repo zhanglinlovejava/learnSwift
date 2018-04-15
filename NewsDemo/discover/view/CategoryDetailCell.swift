@@ -22,7 +22,7 @@ class CategoryDetailCell: UITableViewCell {
         tagLabel.backgroundColor = bgColor
         tagLabel.textColor = UIColor.white
         tagLabel.textAlignment = NSTextAlignment.center
-        tagLabel.font = UIFont.boldSystemFont(ofSize: 25)
+        tagLabel.font = UIFont.boldSystemFont(ofSize: 20)
         
     }
     

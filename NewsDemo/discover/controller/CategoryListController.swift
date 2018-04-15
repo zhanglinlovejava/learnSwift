@@ -8,11 +8,13 @@
 
 import UIKit
 import Alamofire
+import ESPullToRefresh
+import SnapKit
 class CategoryListController:BaseViewController,UITableViewDelegate,UITableViewDataSource{
     var categoryId:Int = -1
-    var tableView:UITableView!
     var categoryDetailList = [VideoItem]()
-    fileprivate var requestCacheArr = [DataRequest]();
+    var nextPageUrl = ""
+    var tableView:UITableView!
     var titleStr :String = ""{
         didSet{
             self.title = oldValue
@@ -21,14 +23,27 @@ class CategoryListController:BaseViewController,UITableViewDelegate,UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         setUp()
-        loadCategoryList()
+        loadCategoryList(.NORMAL)
     }
     private func setUp(){
-        tableView = UITableView(frame: self.view.bounds)
+        tableView = UITableView()
         self.view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(CategoryDetailCell.classForCoder(), forCellReuseIdentifier: "detail")
+        tableView.snp.makeConstraints { (make) in
+            make.left.right.equalToSuperview()
+            make.top.equalToSuperview().offset(60)
+            make.bottom.equalToSuperview().offset(-40)
+        }
+        tableView.es.addPullToRefresh {
+            [unowned self] in
+            self.loadCategoryList(.REFRESH)
+        }
+        tableView.es.addInfiniteScrolling {
+            [unowned self] in
+            self.loadCategoryList(.LOADMORE)
+        }
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -44,20 +59,39 @@ class CategoryListController:BaseViewController,UITableViewDelegate,UITableViewD
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("点解了")
+        let videoVC = VideoPlayController()
+        videoVC.videoId = (categoryDetailList[indexPath.row].data?.id)!
+        videoVC.itemData = categoryDetailList[indexPath.row]
+        self.present(videoVC, animated: true, completion: nil)
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoryDetailList.count
     }
-    private func loadCategoryList(){
-        showLoading()
-        let url = "http://baobab.kaiyanapp.com/api/v4/categories/videoList?id=\(categoryId)"
-        let dataRequest = request(url).responseJSON(completionHandler: { (response) in
+    private func loadCategoryList(_ state:LoadDataState){
+        var url = ""
+        switch state {
+        case .NORMAL:
+            do {
+                showLoading()
+                url = "http://baobab.kaiyanapp.com/api/v4/categories/videoList?id=\(categoryId)"
+            }
+        case .LOADMORE:
+            url = nextPageUrl
+        case .REFRESH:
+            url = "http://baobab.kaiyanapp.com/api/v4/categories/videoList?id=\(categoryId)"
+        }
+        request(url).responseJSON(completionHandler: { (response) in
             self.hideLoading()
+            self.tableView.es.stopLoadingMore()
+            self.tableView.es.stopPullToRefresh()
             if response.error == nil{
                 do{
-                   let categoryDetail = try self.decoder.decode(CategoryDetail.self, from: response.data!)
-                    self.categoryDetailList = categoryDetail.itemList!
+                    let categoryDetail = try self.decoder.decode(CategoryDetail.self, from: response.data!)
+                    if state == .REFRESH{
+                        self.categoryDetailList.removeAll()
+                    }
+                    self.categoryDetailList.append(contentsOf: categoryDetail.itemList!)
+                    self.nextPageUrl = categoryDetail.nextPageUrl!
                     self.tableView.reloadData()
                 }catch{
                     print(error)
@@ -66,13 +100,5 @@ class CategoryListController:BaseViewController,UITableViewDelegate,UITableViewD
                 print(response.error!)
             }
         })
-        requestCacheArr.append(dataRequest)
-    }
-    override func viewWillDisappear(_ animated: Bool) {
-        print("viewWillDisappear")
-        for task in requestCacheArr{
-            task.cancel()
-        }
-        requestCacheArr.removeAll()
     }
 }
