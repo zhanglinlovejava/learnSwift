@@ -7,26 +7,40 @@
 //
 
 import UIKit
-import SnapKit
-class HotViewController: UIViewController {
+import Alamofire
+class HotViewController: BasePageController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        let view1 = UIView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
-        view1.backgroundColor = UIColor.magenta
-        view1.center = self.view.center
-        self.view.addSubview(view1)
-        let view2 = UIView()
-        view2.backgroundColor = UIColor.blue
-        view1.addSubview(view2)
-        view2.snp.makeConstraints { (make) in
-           //让顶部距离view1 的底部距离为10
-            make.top.equalTo(view1.snp.bottom).offset(10)
-            //设置宽和高
-            make.width.height.equalTo(100)
-            //水平中心线小于等于view1的左边
-//            make.centerX.lessThanOrEqualTo(view1.snp.leading)
-            //view2的左边大于等于view1的左边
-            make.left.greaterThanOrEqualTo(view1.snp.left)
+        self.title = "人气榜"
+        loadRankData()
+        menuBar.backgroundColor = UIColor.white
+        menuBar.registerClass(CustomMenuCell.self)
+    }
+    private func loadRankData(){
+        showLoading()
+        let url = "http://baobab.kaiyanapp.com/api/v4/rankList"
+        request(url).responseJSON { (response) in
+            self.hideLoading()
+            if response.error == nil{
+                do{
+                    let rank = try self.decoder.decode(Rank.self, from: response.data!)
+                    self.viewControllers = self.createViewControllers(list: (rank.tabInfo?.tabList)!)
+                }catch{
+                    print(error)
+                }
+            }else{
+                print(response.error!)
+            }
         }
     }
+    private func createViewControllers(list:[RankTab]) -> [UIViewController]{
+        return list.map { item -> UIViewController in
+            let vc = RankListController()
+            vc.apiUrl = item.apiUrl!
+            vc.title = item.name
+            return vc
+        }
+    }
+    
 }
+

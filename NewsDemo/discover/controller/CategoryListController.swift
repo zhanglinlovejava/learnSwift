@@ -8,12 +8,10 @@
 
 import UIKit
 import Alamofire
-import ESPullToRefresh
 import SnapKit
 class CategoryListController:BaseViewController,UITableViewDelegate,UITableViewDataSource{
     var categoryId:Int = -1
     var categoryDetailList = [VideoItem]()
-    var nextPageUrl = ""
     var tableView:UITableView!
     var titleStr :String = ""{
         didSet{
@@ -23,7 +21,7 @@ class CategoryListController:BaseViewController,UITableViewDelegate,UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         setUp()
-        loadCategoryList(.NORMAL)
+        loadCategoryList()
     }
     private func setUp(){
         tableView = UITableView()
@@ -35,14 +33,6 @@ class CategoryListController:BaseViewController,UITableViewDelegate,UITableViewD
             make.left.right.equalToSuperview()
             make.top.equalToSuperview().offset(60)
             make.bottom.equalToSuperview().offset(-40)
-        }
-        tableView.es.addPullToRefresh {
-            [unowned self] in
-            self.loadCategoryList(.REFRESH)
-        }
-        tableView.es.addInfiniteScrolling {
-            [unowned self] in
-            self.loadCategoryList(.LOADMORE)
         }
     }
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -67,31 +57,15 @@ class CategoryListController:BaseViewController,UITableViewDelegate,UITableViewD
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoryDetailList.count
     }
-    private func loadCategoryList(_ state:LoadDataState){
-        var url = ""
-        switch state {
-        case .NORMAL:
-            do {
-                showLoading()
-                url = "http://baobab.kaiyanapp.com/api/v4/categories/videoList?id=\(categoryId)"
-            }
-        case .LOADMORE:
-            url = nextPageUrl
-        case .REFRESH:
-            url = "http://baobab.kaiyanapp.com/api/v4/categories/videoList?id=\(categoryId)"
-        }
+    private func loadCategoryList(){
+        let url = "http://baobab.kaiyanapp.com/api/v4/categories/videoList?id=\(categoryId)"
+        showLoading()
         request(url).responseJSON(completionHandler: { (response) in
             self.hideLoading()
-            self.tableView.es.stopLoadingMore()
-            self.tableView.es.stopPullToRefresh()
             if response.error == nil{
                 do{
                     let categoryDetail = try self.decoder.decode(CategoryDetail.self, from: response.data!)
-                    if state == .REFRESH{
-                        self.categoryDetailList.removeAll()
-                    }
                     self.categoryDetailList.append(contentsOf: categoryDetail.itemList!)
-                    self.nextPageUrl = categoryDetail.nextPageUrl!
                     self.tableView.reloadData()
                 }catch{
                     print(error)

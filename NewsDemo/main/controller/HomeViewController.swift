@@ -10,17 +10,16 @@ import SnapKit
 import UIKit
 import Alamofire
 import SDWebImage
-import ESPullToRefresh
 class HomeViewController: BaseViewController,UITableViewDelegate,UITableViewDataSource
 {
     var tableView:UITableView!
     var videoList = [VideoItem]()
-    var nextPageUrl = ""
+    var bannerList = [VideoItem]()
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "每日精选"
         setUp()
-        loadData(.NORMAL)
+        loadData()
     }
     private func setUp(){
         tableView = UITableView()
@@ -32,14 +31,6 @@ class HomeViewController: BaseViewController,UITableViewDelegate,UITableViewData
             make.left.right.equalToSuperview()
             make.top.equalToSuperview().offset(60)
             make.bottom.equalToSuperview().offset(-40)
-        }
-        tableView.es.addPullToRefresh {
-            [unowned self] in
-            self.loadData(.REFRESH)
-        }
-        tableView.es.addInfiniteScrolling {
-            [unowned self] in
-            self.loadData(.LOADMORE)
         }
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -73,38 +64,20 @@ class HomeViewController: BaseViewController,UITableViewDelegate,UITableViewData
         cell.categoryLabel.text = "#" + (data?.category)!
         return cell
     }
-    fileprivate func loadData(_ state:LoadDataState){
-        print(state)
-        var url = ""
-        switch state {
-        case .NORMAL:
-            do {
-                showLoading()
-                url = "http://baobab.kaiyanapp.com/api/v2/feed?"
-            }
-        case .LOADMORE:
-            url = nextPageUrl
-        case .REFRESH:
-            url = "http://baobab.kaiyanapp.com/api/v2/feed?"
-        }
+    fileprivate func loadData(){
+        let url = "http://baobab.kaiyanapp.com/api/v2/feed?"
+        showLoading()
         request(url).responseJSON { (response) in
             self.hideLoading()
-            self.tableView.es.stopLoadingMore()
-            self.tableView.es.stopPullToRefresh()
             if response.error == nil{
                 do{
                     let home = try self.decoder.decode(Home.self, from: response.data!)
                     let temList = home.issueList![0].itemList!
-                    self.nextPageUrl = home.nextPageUrl!
-                    if state == .REFRESH{
-                        self.videoList.removeAll()
-                    }
                     for (_,item) in temList.enumerated(){
                         if item.type == "video"{
                             self.videoList.append(item)
                         }
                     }
-                    print(self.videoList.count)
                     self.tableView.reloadData()
                 }catch{
                     print(error)

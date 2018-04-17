@@ -24,6 +24,4 @@ func formatSecondDuration(duration:Int) -> String{
         }
     }
 }
-enum LoadDataState {
-    case NORMAL,REFRESH,LOADMORE
-}
+

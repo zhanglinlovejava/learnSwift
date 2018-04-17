@@ -127,7 +127,7 @@ class VideoPlayController:BaseViewController,UITableViewDelegate,UITableViewData
         
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row != 0 && videoList[indexPath.row].data?.dataType == "VideoBeanForClient"{
+        if indexPath.row != 0 && indexPath.row < videoList.count && videoList[indexPath.row].data?.dataType == "VideoBeanForClient"{
             videoId = (videoList[indexPath.row].data?.id)!
             itemData = videoList[indexPath.row]
             headerView.initData(author: (self.itemData.data?.author)!,url: (itemData.data?.playInfo![0].url)!)
@@ -147,6 +147,7 @@ class VideoPlayController:BaseViewController,UITableViewDelegate,UITableViewData
                     let videoDetail = try self.decoder.decode(Issue.self, from: response.data!)
                     self.videoList.append(contentsOf: videoDetail.itemList!)
                     self.tableView.reloadData()
+                    self.tableView.scrollToRow(at: IndexPath(item: 0, section: 0), at: UITableViewScrollPosition.top, animated: true)
                 }catch{
                     print(error)
                 }

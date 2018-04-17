@@ -14,7 +14,7 @@ class FollowTableViewCell: UITableViewCell,UICollectionViewDataSource,UICollecti
     let followBtn = UIButton()
     var collectionView:UICollectionView!
     var itemList:[VideoItem] = [VideoItem]()
-    var fatherController:ViewController?
+    var fatherController:UIViewController?
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setUI()
